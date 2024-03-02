@@ -27,7 +27,7 @@ def get_text_messages(message):
     elif message.text == "/search":
         bot.send_message(message.from_user.id, ans(msg))
         sleep(4.0)
-        bot.send_message(message.from_user.id, 'Выберите аэропорт (например, Внуково):')
+        bot.send_message(message.from_user.id, 'Выберите аэропорт 👉\nПример: Внуково')
         bot.register_next_step_handler(message, get_airport)
     else:
         bot.send_message(message.from_user.id, ans(message.text))
@@ -36,28 +36,28 @@ def get_text_messages(message):
 def get_airport(message):
     global airport
     airport = message.text
-    bot.send_message(message.from_user.id, 'Выберите авиакомпанию (например, Аэрофлот)')
+    bot.send_message(message.from_user.id, 'Выберите авиакомпанию 👉\nПример: Аэрофлот')
     bot.register_next_step_handler(message, get_airline)
 
 
 def get_airline(message):
     global airline
     airline = message.text
-    bot.send_message(message.from_user.id, 'Выберите время вылета (например, утро):')
+    bot.send_message(message.from_user.id, 'Выберите время вылета 👉\nПример: утро')
     bot.register_next_step_handler(message, get_time)
 
 
 def get_time(message):
     global time
     time = message.text
-    bot.send_message(message.from_user.id, 'Выберите максимальную продолжительность полета (например, 3):')
+    bot.send_message(message.from_user.id, 'Выберите максимальную продолжительность полета в часах 👉\nПример: 3')
     bot.register_next_step_handler(message, get_duration)
 
 
 def get_duration(message):
-    global time
-    time = message.text
-    bot.send_message(message.from_user.id, 'Выберите максимальную цена билета (например, 3000):')
+    global duration
+    duration = message.text
+    bot.send_message(message.from_user.id, 'Выберите максимальную цена билета в рублях 👉\nПример: 3000')
     bot.register_next_step_handler(message, get_cost)
 
 
@@ -67,9 +67,9 @@ def get_cost(message):
         try:
             cost = int(message.text)
         except Exception:
-            bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
+            bot.send_message(message.from_user.id, '⚠ Введите одно целое число')
 
-    bot.send_message(message.from_user.id, "Ваш запрос успешно обработан!")
+    bot.send_message(message.from_user.id, f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {airport}\nАвиакомпания ✈: {airline}\n Время вылета 🕤: {time}\nПродолжительность ⏳: до {duration}\nЦена билетов 💵: до {cost}")
 
 
 bot.polling(none_stop=True, interval=0)
