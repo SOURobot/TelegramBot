@@ -1,7 +1,7 @@
 import telebot
 
 from responses import *
-from parser import *
+from parsing import *
 
 from time import sleep
 from telebot import types
@@ -83,9 +83,9 @@ def get_cost(message):
     keyboard.add(key_yes)
     key_no = types.InlineKeyboardButton(text='Редактировать ✏', callback_data='no')
     keyboard.add(key_no)
-    question = f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {reqs['airport']}\nАвиакомпания ✈: {reqs['airline']}\n Время вылета 🕤: {reqs['time']}\nПродолжительность ⏳: до {reqs['duration']}\nЦена билетов 💵: до {reqs['cost']}"
+    question = f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {reqs['airport']}\nАвиакомпания ✈: {reqs['airline']}\nВремя вылета 🕤: {reqs['time']}\nПродолжительность ⏳: до {reqs['duration']}\nЦена билетов 💵: до {reqs['cost']}"
 
-    bot.send_message(message.from_user.id, question)
+    bot.send_message(message.from_user.id, text=question, reply_markup=keyboard)
 
 
 bot.polling(none_stop=True, interval=0)
