@@ -70,13 +70,7 @@ def get_duration(message):
 
 
 def get_cost(message):
-    cost = 0
-    while cost == 0:
-        try:
-            cost = int(message.text)
-            reqs["cost"] = cost
-        except Exception:
-            bot.send_message(message.from_user.id, '⚠ Введите одно целое число')
+    reqs["cost"] = cost
 
     keyboard = types.InlineKeyboardMarkup()
     key_yes = types.InlineKeyboardButton(text='Искать 🔍', callback_data='yes')
