@@ -1,5 +1,3 @@
-from main import bot
-
 counter = 0
 
 
