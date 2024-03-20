@@ -14,11 +14,7 @@ reqs = {}
 @bot.callback_query_handler(func=lambda call: True)
 def callback_worker(call):
     if call.data == "yes":
-        answer = get_html(reqs)
-        if answer:
-            pass
-        else:
-            bot.send_message(call.message.chat.id, 'Функция временно недоступна')
+        main_func(reqs)
     elif call.data == "no":
         bot.send_message(call.message.chat.id, 'Пока ничем не могу помочь')
 
@@ -47,13 +43,13 @@ def get_text_messages(message):
 
 def get_airport(message):
     reqs["airport"] = message.text
-    bot.send_message(message.from_user.id, 'Выберите авиакомпанию ✈\nПример: Аэрофлот')
-    bot.register_next_step_handler(message, get_airline)
+    bot.send_message(message.from_user.id, 'Выберите количество пассажиров 🙂\nПример: 2')
+    bot.register_next_step_handler(message, get_passengers)
 
 
-def get_airline(message):
-    reqs["airline"] = message.text
-    bot.send_message(message.from_user.id, 'Выберите время вылета 🕤\nПример: утро')
+def get_passengers(message):
+    reqs["passengers"] = message.text
+    bot.send_message(message.from_user.id, 'Выберите время вылета 🕤\nПример: после 18')
     bot.register_next_step_handler(message, get_time)
 
 
@@ -70,14 +66,14 @@ def get_duration(message):
 
 
 def get_cost(message):
-    reqs["cost"] = cost
+    reqs["cost"] = message.text
 
     keyboard = types.InlineKeyboardMarkup()
     key_yes = types.InlineKeyboardButton(text='Искать 🔍', callback_data='yes')
     keyboard.add(key_yes)
     key_no = types.InlineKeyboardButton(text='Редактировать ✏', callback_data='no')
     keyboard.add(key_no)
-    question = f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {reqs['airport']}\nАвиакомпания ✈: {reqs['airline']}\nВремя вылета 🕤: {reqs['time']}\nПродолжительность ⏳: до {reqs['duration']}\nЦена билетов 💵: до {reqs['cost']}"
+    question = f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {reqs['airport']}\nВсего пассажиров 🙂: {reqs['passengers']}\nВремя вылета 🕤: {reqs['time']}\nПродолжительность ⏳: до {reqs['duration']}\nЦена билетов 💵: до {reqs['cost']}"
 
     bot.send_message(message.from_user.id, text=question, reply_markup=keyboard)
 
