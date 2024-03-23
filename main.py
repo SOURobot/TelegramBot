@@ -1,6 +1,6 @@
 import telebot
 
-from responses import *
+from exile.responses import *
 from parsing import *
 
 from time import sleep
