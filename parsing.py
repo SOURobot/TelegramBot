@@ -1,12 +1,13 @@
 import requests
+from bs4 import BeautifulSoup
 
 
 def main_func(filters):
     cities = open_cities()
-    for city in cities:
+    for city in cities[::-1]:
         ending, other_keys = create_link(filters, city)
         curr_html = get_html(ending)
-        print(curr_html)
+        get_info(curr_html)
         break
 
 
@@ -23,7 +24,7 @@ def open_cities():
 def create_link(filters, city):
     ending = ""
 
-    ending += {"*": "MOW", "Внуково": "VKO", "Домодедово": "DME", "Шереметьево": "SVO"}[filters['airport']]
+    ending += {"*": "MOW", "Внуково": "VKO", "Домодедово": "DME", "Шереметьево": "SVO"}[filters["airport"]]
     ending += city
     ending += str(filters['passengers'])
 
@@ -38,7 +39,12 @@ def get_html(ending):
     headers = {"Accept": st_accept, "User-Agent": st_useragent}
 
     link = f"https://www.aviasales.ru/?params={ending}"
-    print(link)
     req = requests.get(link, headers)
     src = req.text
     return src
+
+
+def get_info(code):
+    soup = BeautifulSoup(code, "lxml")
+    data = soup.find_all('span', class_="s__wRhMOEwg2Ub7G1CotYcY")
+    print(data)
