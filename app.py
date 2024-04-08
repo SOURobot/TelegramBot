@@ -8,7 +8,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-reply_keyboard = [['/start', '/help', '/search']]
+reply_keyboard = [['/start', '/help'], ['/search', '/stop']]
 markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 
 params = {}
@@ -16,10 +16,6 @@ params = {}
 
 async def start(update, context):
     await update.message.reply_text("Привет!\nМеня зовут Cheap & Daily и я телеграм-бот.\nХотите выбраться из Москвы и куда-нибудь слетать? Тогда вам ко мне! Я помогу найти самые выгодные билеты, удовлетворяющие вашим пожеланиям.\nНу что, начнем?\nТогда нажимайте /search и поехали!\nP.S. Не знаете, как со мной работать? Нажмите /help для получения списка команд и прочих инструкций.", reply_markup=markup)
-
-
-# async def answer(update, context):
-#     pass
 
 
 async def help(update, context):
@@ -73,24 +69,22 @@ async def fourth_r(update, context):
 async def fifth_r(update, context):
     params["cost"] = update.message.text
     await update.message.reply_text(f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {params['airport']}\nВсего пассажиров 🙂: {params['passengers']}\nВремя вылета 🕤: {params['time']}\nПродолжительность ⏳: до {params['duration']}\nЦена билетов 💵: до {params['cost']}")
+    # add buttons
     return ConversationHandler.END
 
 
 async def stop(update, context):
-    await update.message.reply_text("Поиск отменен")
+    await update.message.reply_text("Поиск отменен ❌")
     return ConversationHandler.END
 
 
 def main():
     app = Application.builder().token(token=BOT_TOKEN).build()
-    # text_handler = MessageHandler(filters.TEXT, answer)
-    # app.add_handler(text_handler)
 
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help))
     app.add_handler(CommandHandler("search", search))
     app.add_handler(CommandHandler("tips", tips))
-    app.add_handler(CommandHandler("go", go))
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('go', go)],

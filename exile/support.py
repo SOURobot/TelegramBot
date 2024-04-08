@@ -1,4 +1,4 @@
-with open("data/base.txt", "r") as c:
+with open("../data/base.txt", "r") as c:
     cities = c.read().split("\n")
     data = []
     for line in cities:
@@ -7,7 +7,7 @@ with open("data/base.txt", "r") as c:
     c.close()
 
 
-with open("data/cities.txt", "w") as c:
+with open("../data/cities.txt", "w") as c:
     stage = 0
     while stage != 4:
         row = ""
