@@ -1,5 +1,5 @@
 import pprint
-
+import json
 import requests
 from bs4 import BeautifulSoup
 
@@ -8,12 +8,9 @@ TOKEN = "335150ec234b41d5d5501e72eaa709c5"
 
 
 def main_func(filters):
-    cities = open_cities()
-    for city in cities[::-1]:
-        ending, other_keys = create_link(filters, city)
-        curr_html = get_html(ending)
-        print(curr_html)
-        break
+    ending, other_keys = create_link(filters)
+    curr_html = get_html(ending)
+    pprint.pprint(curr_html)
 
 
 def open_cities():
@@ -26,14 +23,13 @@ def open_cities():
     return data
 
 
-def create_link(filters, city):
+def create_link(filters):
     # unique=false&sorting=price&direct=false&currency=rub&limit=30&page=1&one_way=true&token=РазместитеЗдесьВашТокен
 
     ending = ""
 
     ending += "origin=" + {"*": "MOW", "Внуково": "VKO", "Домодедово": "DME", "Шереметьево": "SVO"}[filters["airport"]]
-    # ending += "&destination" + city
-    ending += f"&unique=true&sorting=price&direct=true&limit=1&one_way=true&token={TOKEN}"
+    ending += f"&unique=true&sorting=price&direct=true&limit={filters['amount']}&one_way=true&token={TOKEN}"
 
     other_keys = {"time": filters['time'], "duration": filters['duration'], "cost": filters['cost']}
 
@@ -47,16 +43,16 @@ def get_html(ending):
 
     link = f"https://api.travelpayouts.com/aviasales/v3/prices_for_dates?{ending}"
     req = requests.get(link)
-    src = req.text
+    src = req.json()
     return src
 
 
 def get_info(code):
-    soup = BeautifulSoup(code, "lxml")
-    data = soup.find_all('span', class_="s__wRhMOEwg2Ub7G1CotYcY")
-    print(data)
+    airline = code["airline"]
+    city = code["destination"]
+    duration = code["duration"]
 
 
 main_func({
-    "airport": "Внуково", "time": "после 18", "duration": 300, "cost": 3000
+    "airport": "Внуково", "amount": 5, "time": "после 18", "duration": 300, "cost": 3000
 })

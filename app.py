@@ -40,13 +40,13 @@ async def go(update, context):
 
 async def first_r(update, context):
     params["airport"] = update.message.text
-    await update.message.reply_text("Выберите количество пассажиров 🙂\nПример: 2")
+    await update.message.reply_text("Сколько вариантов вы хотите увидеть? 📋\nПример: 5")
     #check
     return 2
 
 
 async def second_r(update, context):
-    params["passengers"] = update.message.text
+    params["amount"] = update.message.text
     await update.message.reply_text("Выберите время вылета 🕤\nПример: после 18")
     # check
     return 3
@@ -68,7 +68,7 @@ async def fourth_r(update, context):
 
 async def fifth_r(update, context):
     params["cost"] = update.message.text
-    await update.message.reply_text(f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {params['airport']}\nВсего пассажиров 🙂: {params['passengers']}\nВремя вылета 🕤: {params['time']}\nПродолжительность ⏳: до {params['duration']}\nЦена билетов 💵: до {params['cost']}")
+    await update.message.reply_text(f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\nАэропорт 🏛: {params['airport']}\nБудет предложено вариантов: {params['amount']}\nВремя вылета 🕤: {params['time']}\nПродолжительность ⏳: до {params['duration']}\nЦена билетов 💵: до {params['cost']}")
     # add buttons
     return ConversationHandler.END
 
