@@ -1,5 +1,7 @@
 import pprint
 import json
+import sqlite3
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -10,7 +12,8 @@ TOKEN = "335150ec234b41d5d5501e72eaa709c5"
 def main_func(filters):
     ending, other_keys = create_link(filters)
     curr_html = get_html(ending)
-    pprint.pprint(curr_html)
+    pull_info(curr_html)
+    get_info(other_keys)
 
 
 def open_cities():
@@ -24,35 +27,54 @@ def open_cities():
 
 
 def create_link(filters):
-    # unique=false&sorting=price&direct=false&currency=rub&limit=30&page=1&one_way=true&token=РазместитеЗдесьВашТокен
-
     ending = ""
 
     ending += "origin=" + {"*": "MOW", "Внуково": "VKO", "Домодедово": "DME", "Шереметьево": "SVO"}[filters["airport"]]
-    ending += f"&unique=true&sorting=price&direct=true&limit={filters['amount']}&one_way=true&token={TOKEN}"
+    ending += f"&unique=true&sorting=price&direct=true&limit=93&one_way=true&token={TOKEN}"
 
-    other_keys = {"time": filters['time'], "duration": filters['duration'], "cost": filters['cost']}
+    hours = filters['time'].split()
+    other_keys = {"amount": filters['amount'], "time": "> " + hours[1] if hours[0] == "после" else "< " + hours[1], "duration": filters['duration'], "cost": filters['cost']}
 
     return ending, other_keys
 
 
 def get_html(ending):
-    # st_accept = "text/html"
-    # st_useragent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 YaBrowser/24.1.0.0 Safari/537.36"
-    # headers = {"Accept": st_accept, "User-Agent": st_useragent}
-
     link = f"https://api.travelpayouts.com/aviasales/v3/prices_for_dates?{ending}"
     req = requests.get(link)
     src = req.json()
     return src
 
 
-def get_info(code):
-    airline = code["airline"]
-    city = code["destination"]
-    duration = code["duration"]
+def pull_info(code):
+    connection = sqlite3.connect('SQL_database/AIR')
+    cursor = connection.cursor()
+    all_cities = code["data"]
+    for var in all_cities:
+        city = var["destination"]
+        airline = var["airline"]
+        departure = str(int(var["departure_at"][11:13]) + 3) + ":00 " + ".".join(var["departure_at"][:10].split("-")[::-1])
+        duration = var["duration"]
+        price = var["price"]
+        cursor.execute('INSERT INTO InStream (city, airline, departure, duration, price) VALUES (?, ?, ?, ?, ?)',
+                       (city, airline, departure, duration, price))
+        connection.commit()
+    connection.close()
+
+
+def get_info(filters):
+    connection = sqlite3.connect('SQL_database/AIR')
+    cursor = connection.cursor()
+    cursor.execute(f'''
+    SELECT city, airline, departure, duration, price
+    FROM InStream
+    WHERE departure {filters["time"]} and duration <= ? and price <= ?
+    ''', (filters["duration"], filters["cost"]))
+    results = cursor.fetchall()
+    results = list(set(results))
+    for i in results:
+        print(i)
 
 
 main_func({
-    "airport": "Внуково", "amount": 5, "time": "после 18", "duration": 300, "cost": 3000
+    "airport": "Внуково", "amount": 5, "time": "до 23", "duration": 300, "cost": 5000
 })
