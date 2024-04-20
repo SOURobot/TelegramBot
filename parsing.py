@@ -81,16 +81,15 @@ def get_info(filters):
 def format_out(out):
     if not out:
         return "Похоже, по вашему запросу ничего не найдено."
-    output = []
+    text = ""
     for ticket in out:
-        text = ""
         text += "Город 🏙: " + ticket[0] + "\n"
         text += "Авиакомпания ✈: " + ticket[1] + "\n"
         text += "Дата и время 📆: " + ticket[3] + " " + str(ticket[2] // 60)+ ":" + str(ticket[2] % 60) + "\n"
         text += "Продолжительность ⌚: " + str(ticket[4]) + " минут\n"
         text += "Стоимость билета 💵: " + str(ticket[5]) + " рублей\n"
-        output.append(text)
-    return output
+        text += "\n"
+    return text[:-4]
 
 
 main_func({

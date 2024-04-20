@@ -78,7 +78,7 @@ async def fifth_r(update, context):
 async def sixth_r(update, context):
     x = update.message.text
     output = main_func(params)
-    await update.message.reply_text(output[0])
+    await update.message.reply_text(str(output))
     return ConversationHandler.END
 
 
