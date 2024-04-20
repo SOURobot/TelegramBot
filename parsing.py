@@ -12,7 +12,7 @@ def main_func(filters):
     curr_html = get_html(ending)
     pull_info(curr_html)
     results = get_info(other_keys)
-    out = random.sample(results, min(other_keys["amount"], len(results)))
+    out = random.sample(results, min(int(other_keys["amount"]), len(results)))
     return format_out(out)
 
 
@@ -51,6 +51,7 @@ def get_html(ending):
 def pull_info(code):
     connection = sqlite3.connect('SQL_database/AIR')
     cursor = connection.cursor()
+    cursor.execute('DELETE FROM InStream')
     all_cities = code["data"]
     for var in all_cities:
         city = var["destination"]
@@ -69,11 +70,14 @@ def get_info(filters):
     connection = sqlite3.connect('SQL_database/AIR')
     cursor = connection.cursor()
     cursor.execute(f'''
-    SELECT city, airline, dep_time, dep_date, duration, price
+    SELECT Cities.name, InStream.airline, InStream.dep_time, InStream.dep_date, InStream.duration, InStream.price
     FROM InStream
-    WHERE dep_time {filters["time"]} and duration <= ? and price <= ?
+    INNER JOIN Cities
+    ON InStream.city = Cities.code
+    WHERE InStream.dep_time {filters["time"]} and InStream.duration <= ? and InStream.price <= ?
     ''', (filters["duration"], filters["cost"]))
     results = cursor.fetchall()
+    connection.close()
     results = list(set(results))
     return results
 
@@ -89,6 +93,7 @@ def format_out(out):
         text += "Продолжительность ⌚: " + str(ticket[4]) + " минут\n"
         text += "Стоимость билета 💵: " + str(ticket[5]) + " рублей\n"
         text += "\n"
+    print(text)
     return text[:-4]
 
 

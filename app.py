@@ -48,7 +48,7 @@ async def first_r(update, context):
 
 
 async def second_r(update, context):
-    params["amount"] = update.message.text
+    params["amount"] = int(update.message.text)
     await update.message.reply_text("Выберите время вылета 🕤\nПример: после 18")
     # check
     return 3
@@ -62,14 +62,14 @@ async def third_r(update, context):
 
 
 async def fourth_r(update, context):
-    params["duration"] = update.message.text
+    params["duration"] = int(update.message.text) * 60
     await update.message.reply_text("Выберите максимальную цена билета в рублях 💵\nПример: 3000")
     # check
     return 5
 
 
 async def fifth_r(update, context):
-    params["cost"] = update.message.text
+    params["cost"] = int(update.message.text)
     await update.message.reply_text(f"✅ Ваш запрос успешно обработан!\nПроверьте введенные данные 👇\n\nАэропорт 🏛: {params['airport']}\nБудет предложено вариантов: {params['amount']}\nВремя вылета 🕤: {params['time']}\nПродолжительность ⏳: до {params['duration']}\nЦена билетов 💵: до {params['cost']}\n\nЕсли все верно, отправьте любое сообщение.")
     # add buttons
     return 6
