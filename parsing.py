@@ -32,11 +32,28 @@ def create_link(filters):
     ending += "origin=" + {"*": "MOW", "Внуково": "VKO", "Домодедово": "DME", "Шереметьево": "SVO"}[filters["airport"]]
     ending += f"&unique=true&sorting=price&direct=true&limit=93&one_way=true&token={TOKEN}"
 
-    hours = filters['time'].split()
     other_keys = {"amount": filters['amount'],
-                  "time": "> " + str(int(hours[1]) * 60) if hours[0] == "после" else "< " + str(int(hours[1]) * 60),
-                  "duration": filters['duration'],
-                  "cost": filters['cost']}
+                  "time": "",
+                  "duration": "",
+                  "cost": ""}
+
+    if len(filters["time"].split()) == 2:
+        if filters["time"].split()[0] == "до":
+            other_keys["time"] = "WHERE InStream.dep_time < " + str(int(filters["time"].split()[1]))
+        else:
+            other_keys["time"] = "WHERE InStream.dep_time > " + str(int(filters["time"].split()[1]))
+
+    if filters["duration"] != "*":
+        if other_keys["time"]:
+            other_keys["duration"] = " AND InStream.duration <= " + str(filters["duration"])
+        else:
+            other_keys["duration"] = "WHERE InStream.duration <= " + str(filters["duration"])
+
+    if filters["cost"] != "*":
+        if other_keys["duration"]:
+            other_keys["cost"] = " AND InStream.price <= " + str(filters["cost"])
+        else:
+            other_keys["cost"] = "WHERE InStream.price <= " + str(filters["cost"])
 
     return ending, other_keys
 
@@ -74,8 +91,7 @@ def get_info(filters):
     FROM InStream
     INNER JOIN Cities
     ON InStream.city = Cities.code
-    WHERE InStream.dep_time {filters["time"]} and InStream.duration <= ? and InStream.price <= ?
-    ''', (filters["duration"], filters["cost"]))
+    {filters["time"]}{filters["duration"]}{filters["cost"]}''')
     results = cursor.fetchall()
     connection.close()
     results = list(set(results))
